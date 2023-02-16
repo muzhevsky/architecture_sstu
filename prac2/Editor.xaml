@@ -1,0 +1,35 @@
+﻿<Window x:Class="MVVM.Editor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MVVM"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=local:EditorViewModel}"
+        Title="Edit" Height="444" Width="333">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="0.2*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="2" Orientation="Horizontal"/>
+
+        <StackPanel Grid.Row="1" DataContext="{Binding Note}" Grid.ColumnSpan="2" Margin="0,0,0,67" Grid.RowSpan="2">
+            <TextBlock Text="Выбранный элемент"  />
+            <TextBlock Text="Заголовок" />
+            <TextBox Text="{Binding Title, UpdateSourceTrigger=LostFocus}" />
+            <TextBlock Text="Содержание" />
+            <TextBox Text="{Binding Description, UpdateSourceTrigger=LostFocus}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="3">
+            <Button Command="{Binding CloseEditorCommand}" 
+                    CommandParameter="" Height="50" Width="100">
+                <TextBlock Text="Завершить"></TextBlock></Button>
+        </StackPanel>
+    </Grid>
+</Window>
