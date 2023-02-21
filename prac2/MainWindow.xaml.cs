@@ -18,7 +18,7 @@ namespace MVVM
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : System.Windows.Window
     {
         public MainWindow()
         {
@@ -27,7 +27,7 @@ namespace MVVM
           //  DataContext =
           //      new ApplicationViewModel();
             DataContext =
-              new ApplicationViewModel(new DefaultDialogService(), new JsonFileService());
+              new ApplicationViewModel(new DefaultDialogService(), new JsonFileService(), new DefaultEditorService());
         }
     }
 }

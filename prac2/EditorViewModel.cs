@@ -1,13 +1,14 @@
 ﻿using MVVM;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace MVVM
 {
     public class EditorViewModel : INotifyPropertyChanged
     {
         private Note _note;
-        private Editor _editorScreen;
+        private System.Windows.Window _editorScreen;
 
         public Note Note
         {
@@ -18,7 +19,7 @@ namespace MVVM
         {
 
         }
-        public EditorViewModel(Note p, Editor editor)
+        public EditorViewModel(Note p, Window editor)
         {
             _note = p;
             _editorScreen = editor;

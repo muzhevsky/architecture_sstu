@@ -58,10 +58,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DefaultDialogService.cs" />
+    <Compile Include="DefaultEditorService.cs" />
     <Compile Include="Editor.xaml.cs">
       <DependentUpon>Editor.xaml</DependentUpon>
     </Compile>
     <Compile Include="IDialogService.cs" />
+    <Compile Include="IEditorService.cs" />
     <Compile Include="IFileService.cs" />
     <Compile Include="JsonFileService.cs" />
     <Compile Include="RelayCommand.cs" />

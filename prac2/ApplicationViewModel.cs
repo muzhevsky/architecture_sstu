@@ -12,8 +12,9 @@ namespace MVVM
 {
     public class ApplicationViewModel : INotifyPropertyChanged
     {
-        IFileService fileService;
-        IDialogService dialogService;
+        IFileService _fileService;
+        IDialogService _dialogService;
+        IEditorService _editorService;
         Note _selectedNote;
         public ObservableCollection<Note> Notes { get; set; }
 
@@ -28,15 +29,15 @@ namespace MVVM
                   {
                       try
                       {
-                          if (dialogService.SaveFileDialog() == true)
+                          if (_dialogService.SaveFileDialog() == true)
                           {
-                              fileService.Save(dialogService.FilePath, Notes.ToList());
-                              dialogService.ShowMessage("Файл сохранен");
+                              _fileService.Save(_dialogService.FilePath, Notes.ToList());
+                              _dialogService.ShowMessage("Файл сохранен");
                           }
                       }
                       catch (Exception ex)
                       {
-                          dialogService.ShowMessage(ex.Message);
+                          _dialogService.ShowMessage(ex.Message);
                       }
                   }));
             }
@@ -53,18 +54,18 @@ namespace MVVM
                   {
                       try
                       {
-                          if (dialogService.OpenFileDialog() == true)
+                          if (_dialogService.OpenFileDialog() == true)
                           {
-                              var notes = fileService.Open(dialogService.FilePath);
+                              var notes = _fileService.Open(_dialogService.FilePath);
                               Notes.Clear();
                               foreach (var p in notes)
                                   Notes.Add(p);
-                              dialogService.ShowMessage("Файл открыт");
+                              _dialogService.ShowMessage("Файл открыт");
                           }
                       }
                       catch (Exception ex)
                       {
-                          dialogService.ShowMessage(ex.Message);
+                          _dialogService.ShowMessage(ex.Message);
                       }
                   }));
             }
@@ -120,7 +121,11 @@ namespace MVVM
 
         private void ShowEditWindow()
         {
-            var editor = new Editor(SelectedNote);
+            System.Windows.Window editor;
+            bool error;
+            (editor, error) = _editorService.EditorDialog(_selectedNote);
+
+            if (error) { /*какой-то лог*/ }
             editor.Show();
         }
 
@@ -135,10 +140,11 @@ namespace MVVM
             }
         }
 
-        public ApplicationViewModel(IDialogService dialogService, IFileService fileService)
+        public ApplicationViewModel(IDialogService dialogService, IFileService fileService, IEditorService editorService)
         {
-            this.dialogService = dialogService;
-            this.fileService = fileService;
+            _dialogService = dialogService;
+            _fileService = fileService;
+            _editorService = editorService;
 
             Notes = new ObservableCollection<Note>();
         }

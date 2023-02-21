@@ -17,9 +17,9 @@ namespace MVVM
     /// <summary>
     /// Interaction logic for Edidit.xaml
     /// </summary>
-    public partial class Editor : Window
+    public partial class Window : System.Windows.Window
     {
-        public Editor(Note note)
+        public Window(Note note)
         {
             InitializeComponent();
             DataContext = new EditorViewModel(note, this);
