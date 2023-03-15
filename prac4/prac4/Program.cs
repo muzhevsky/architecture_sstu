@@ -1,5 +1,7 @@
-var builder = WebApplication.CreateBuilder(args);
+using prac4;
 
+var builder = WebApplication.CreateBuilder(args);
+var Courier = new Courier(32);
 // Add services to the container.
 
 builder.Services.AddControllers();

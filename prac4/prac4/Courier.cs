@@ -16,8 +16,8 @@ namespace prac4
             return null;
         }
 
-        public Courier() {
-            Id = 32;
+        public Courier(int id) {
+            Id = id;
             Location = new LocationData();
             Location.X = 0.5f;
             Location.Y = 5.2f;
