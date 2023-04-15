@@ -27,6 +27,7 @@ func InitGenerator(datacenterid int8, computerid int8) {
 	dataCenterId = datacenterid
 	computerId = computerid
 	startMiliseconds = time.Now().UnixMilli()
+	currentMiliseconds = startMiliseconds
 }
 
 func StartGenerator() {
@@ -39,7 +40,9 @@ func StopGenerator() {
 }
 
 func update() {
+	fmt.Println("asdas")
 	time.Sleep(time.Millisecond)
+	currentMiliseconds++
 	sequenceNumber = 0
 	if generationStatus == on {
 		go update()
