@@ -3,8 +3,7 @@ package producer
 import (
 	"context"
 	"github.com/rabbitmq/amqp091-go"
-	"log"
-	"prac8/errorHandler"
+	"prac8/errorHandling"
 	"time"
 )
 
@@ -18,10 +17,10 @@ func NewDefault(connectionString string, queueName string) (producer *defaultSer
 	producer = &defaultServiceProducer{}
 	var err error
 	producer.connection, err = amqp091.Dial(connectionString)
-	errorHandler.HandleError(err, "Failed to connect to RabbitMQ")
+	errorHandling.HandleError(err, "Failed to connect to RabbitMQ")
 
 	producer.channel, err = producer.connection.Channel()
-	errorHandler.HandleError(err, "Failed to create channel")
+	errorHandling.HandleError(err, "Failed to create channel")
 
 	producer.queueName = queueName
 
@@ -37,12 +36,12 @@ func (producer *defaultServiceProducer) SendMessage(content []byte) {
 		false,              // no-wait
 		nil,                // arguments
 	)
-	errorHandler.HandleError(err, "Failed to declare a queue")
+	errorHandling.HandleError(err, "Failed to declare a queue")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	body := "Hello World!"
+	body := string(content)
 	err = producer.channel.PublishWithContext(ctx,
 		"",         // exchange
 		queue.Name, // routing key
@@ -53,6 +52,5 @@ func (producer *defaultServiceProducer) SendMessage(content []byte) {
 			Body:        []byte(body),
 		})
 
-	errorHandler.HandleError(err, "Failed to publish a message")
-	log.Printf(" [x] Sent %s\n", body)
+	errorHandling.HandleError(err, "Failed to publish a message")
 }

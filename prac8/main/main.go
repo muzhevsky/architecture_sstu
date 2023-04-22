@@ -1,22 +1,44 @@
 package main
 
 import (
-	"prac8/consumer"
+	"net/http"
 	"prac8/producer"
-	"prac8/services/seller"
+	"prac8/services"
 )
 
+type person struct {
+	Name string
+	Age  int
+}
+
 func main() {
-	producer := producer.NewDefault("amqp://guest:guest@localhost:5672/", "testIn")
-	consumer := consumer.NewDefault("amqp://guest:guest@localhost:5672/", "testOut")
+	initServices("amqp://guest:guest@localhost:5672/")
+}
 
-	go consumer.StartConsuming()
+func initServices(connectionString string) {
+	initSeller(connectionString)
+	initPayment(connectionString)
 
-	sellerService := seller.New(producer, consumer)
+	orderService := services.NewOrderService(connectionString)
+	orderService.Start()
+	router := orderService.ConfigureRouter()
+	http.ListenAndServe("127.0.0.1:8080", router)
+}
 
-	slice := make([]byte, 100)
-	for i := 0; i < 100; i++ {
-		slice[i] = byte(i) << 1
-	}
-	sellerService.AcceptOrder(slice)
+func initPayment(connectionString string) {
+	producer := producer.NewDefault(connectionString, "answer")
+	consumer := services.NewDefault(connectionString, "payment")
+
+	paymentService := services.NewPayment(producer, consumer)
+	consumer.SetService(paymentService)
+	paymentService.Start()
+}
+
+func initSeller(connectionString string) {
+	producer := producer.NewDefault(connectionString, "answer")
+	consumer := services.NewDefault(connectionString, "seller")
+
+	sellerService := services.NewSeller(producer, consumer)
+	consumer.SetService(sellerService)
+	sellerService.Start()
 }

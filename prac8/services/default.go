@@ -1,33 +1,36 @@
-package consumer
+package services
 
 import (
-	"bytes"
 	"github.com/rabbitmq/amqp091-go"
 	"log"
-	"prac8/errorHandler"
-	"time"
+	"prac8/errorHandling"
 )
 
 type defaultServiceConsumer struct {
+	service    Service
 	connection *amqp091.Connection
 	channel    *amqp091.Channel
 	queueName  string
 }
 
-func NewDefault(connectionString string, queuerName string) (consumer *defaultServiceConsumer) {
+func NewDefault(connectionString string, queueName string) (consumer *defaultServiceConsumer) {
 	consumer = &defaultServiceConsumer{}
 	var err error
 	consumer.connection, err = amqp091.Dial(connectionString)
-	errorHandler.HandleError(err, "Failed to connect to RabbitMQ")
+	errorHandling.HandleError(err, "Failed to connect to RabbitMQ")
 
 	consumer.channel, err = consumer.connection.Channel()
-	errorHandler.HandleError(err, "Failed to create channel")
+	errorHandling.HandleError(err, "Failed to create channel")
 
-	consumer.queueName = queuerName
+	consumer.queueName = queueName
 	return consumer
 }
 
-func (consumer *defaultServiceConsumer) StartConsuming() {
+func (consumer *defaultServiceConsumer) SetService(service Service) {
+	consumer.service = service
+}
+
+func (consumer *defaultServiceConsumer) StartConsuming(handler func([]byte)) {
 	queue, err := consumer.channel.QueueDeclare(
 		consumer.queueName, // name
 		false,              // durable
@@ -36,7 +39,7 @@ func (consumer *defaultServiceConsumer) StartConsuming() {
 		false,              // no-wait
 		nil,                // arguments
 	)
-	errorHandler.HandleError(err, "Failed to declare a queue")
+	errorHandling.HandleError(err, "Failed to declare a queue")
 
 	msgs, err := consumer.channel.Consume(
 		queue.Name, // queue
@@ -47,18 +50,15 @@ func (consumer *defaultServiceConsumer) StartConsuming() {
 		false,      // no-wait
 		nil,        // args
 	)
-	errorHandler.HandleError(err, "Failed to register a consumer")
+	errorHandling.HandleError(err, "Failed to register a consumer")
 
 	var forever chan struct{}
 
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
-			dotCount := bytes.Count(d.Body, []byte("."))
-			t := time.Duration(dotCount)
-			time.Sleep(t * time.Second)
-			log.Printf("Done")
-			d.Ack(false)
+			handler(d.Body)
+			consumer.service.OnConsume(d.Body)
+			d.Ack(true)
 		}
 	}()
 
