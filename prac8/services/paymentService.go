@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"fmt"
 	"prac8/errorHandling"
 	"prac8/producer"
 	"prac8/utilTypes"
@@ -28,7 +29,7 @@ func (s *PaymentService) Reply(order []byte) {
 }
 
 func (s *PaymentService) Start() {
-	go (*(s.consumer)).StartConsuming(func(a []byte) { println("payment consumed") })
+	go (*(s.consumer)).StartConsuming(func(a []byte) {})
 }
 
 func (s *PaymentService) OnConsume(message []byte) {
@@ -38,8 +39,10 @@ func (s *PaymentService) OnConsume(message []byte) {
 
 	if mes.SellerId < 0 {
 		mes.Status = int(utilTypes.PaymentRejected)
+		fmt.Println("payment rejected")
 	} else {
 		mes.Status = int(utilTypes.PaymentSucceeded)
+		fmt.Println("payment succeeded")
 	}
 
 	result, err := json.Marshal(mes)

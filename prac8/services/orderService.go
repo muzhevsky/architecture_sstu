@@ -27,12 +27,13 @@ func NewOrderService(connectionString string) *OrderService {
 }
 
 func (service *OrderService) CreateOrder(message []byte) {
+	fmt.Println("\nTrying to create order")
 	service.sellerProducer.SendMessage(message)
 }
 
 func (service *OrderService) Start() {
 	service.answerConsumer.SetService(service)
-	go service.answerConsumer.StartConsuming(func(a []byte) { println("order consumed") })
+	go service.answerConsumer.StartConsuming(func(a []byte) {})
 }
 
 func (service *OrderService) OnConsume(message []byte) {
