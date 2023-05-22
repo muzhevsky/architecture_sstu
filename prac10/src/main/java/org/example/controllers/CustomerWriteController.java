@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class CustomerWrteController {
+public class CustomerWriteController {
     @Autowired
     @Qualifier("customerWriteRepository")
     CustomerWriteRepository repository;

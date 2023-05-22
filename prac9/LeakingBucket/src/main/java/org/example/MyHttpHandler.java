@@ -16,12 +16,11 @@ public class MyHttpHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String response = "";
         if (exchange.getRequestURI().toString().equals("/favicon.ico")) return;
-        var succeeded = manager.addRequest(exchange);
-        if (succeeded)
-            response = "query added";
-        else{
-            response = "query rejected";
-        }
+
+        var succeeded = manager.addRequest(exchange); // взывается интерфейсный метод
+        if (succeeded) response = "query added";
+        else response = "query rejected";
+
         exchange.sendResponseHeaders(200, response.length());
         OutputStream os = exchange.getResponseBody();
         os.write(response.getBytes());
